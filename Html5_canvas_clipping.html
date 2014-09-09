@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+
+    <style>
+        html,body{
+            padding : 0;
+            margin : 0;
+        }
+    </style>
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var img = new Image();
+            img.src = 'img.jpg';
+            img.onload = function (event) {
+                var canvas = document.getElementById('source');
+                var context = canvas.getContext('2d');
+                context.drawImage(img,0,0,340,200);
+            };
+             var start_x,start_y;
+            var obj = {start:{}, end:{},
+                get height(){
+                    return this.end.y - this.start.y;
+                },
+                get width(){
+                    return this.end.x - this.start.x;
+                }
+            };
+            var mousedown;
+           document.getElementById('source').addEventListener('mousedown',function(event){
+               event.preventDefault();
+                start_x = event.clientX;
+                 start_y = event.clientY;
+               obj.start.x = start_x;
+               obj.start.y = start_y;
+               mousedown = true;
+            });
+
+
+            document.getElementById('source').addEventListener('mousemove',function(event){
+                event.preventDefault();
+                if(mousedown){
+                    end_x = event.clientX;
+                    end_y = event.clientY;
+                    obj.end.x = end_x;
+                    obj.end.y = end_y;
+                    context.drawImage(img,0,0,340,200);
+                    context.setLineDash([2,3]);
+                    context.strokeRect(obj.start.x, obj.start.y, obj.width, obj.height);
+                }
+            });
+          /*  document.getElementById('source').addEventListener('mouseout',function(event){
+                event.preventDefault();
+
+                mousedown = false;
+
+            });*/
+            document.getElementById('source').addEventListener('mouseup',function(event){
+             event.preventDefault();
+                var canvas = document.getElementById('source');
+                var canvas_dest = document.getElementById('container');
+                var context = canvas_dest.getContext('2d');
+                context.drawImage(img,obj.start.x, obj.start.y, obj.width * 3, obj.height *3,0,0,200,200);
+                mousedown = false;
+            });
+
+            var canvas = document.getElementById('source');
+            var context = canvas.getContext('2d');
+
+        });
+    </script>
+</head>
+<body>
+<canvas id="source" height="200" width="340" ></canvas>
+<canvas id="container" height="200" width="340" ></canvas>
+
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <style>
+        body{
+            padding: 0;
+            margin: 0;
+        }
+        input{
+            margin: 1em;
+        }
+        button.cross{
+            float: right;
+            background-color: #c30000;
+            border-radius: 0.1em;
+            margin-top:0.3em;
+            font-family: "helvetice nueue";
+
+        }
+        div.file{
+            font: 300 'helvetice nueue';
+            border-radius: 0.3em;
+            padding:0.5em;
+            border:1px solid gray;
+            background-color: #ffc4a0;
+            text-shadow: 1px 1px 1px #ffb7a1;
+            width:60%;
+            height : 2em;
+            margin :0 auto;
+            font :300 'helvetice nueue';
+
+        }
+        div#results{
+            margin:1em;
+            
+        }
+        
+        img{
+            margin:1em;
+        }
+    </style>
+    <title></title>
+    <script>
+        document.addEventListener('DOMContentLoaded',function(){
+            var input = document.getElementById('inp1');
+            var div_main = document.getElementsByClassName('input')[0];
+            div_main.files =[];
+            div_main.fileindices=[];
+             input.addEventListener('change',function(event){
+                 div_main.files = Array.prototype.slice.call(this.files);
+
+                 var div_images = document.getElementById('results');
+                 div_main.files.forEach(function(file){
+
+                     if(file.type.contains('image/')){
+
+                         var reader = new FileReader();
+                         reader.onloadend = function(event){
+                             var img = document.createElement('img');
+                             img.style.width = 400 + 'px';
+                             img.style.height = 400 + 'px';
+                             img.src=event.target.result;
+                             img.setAttribute("data-id",hash);
+
+                             div_images.appendChild(img);
+
+                         };
+                         reader.readAsDataURL(file);
+                     }
+                     var hash = generateUUID();
+                     div_main.fileindices.push(hash);
+                     var div = document.createElement('div');
+                     div.setAttribute("data-id",hash);
+                     var span=document.createElement('span');
+                     span.innerHTML = file.name;
+                     div.className = 'file';
+                     div.appendChild(span);
+                     var button = document.createElement('button');
+                     button.innerHTML = '&#x2715';
+                     button.setAttribute('id',file.name);
+                     button.className = 'cross';
+                     div.appendChild(button);
+                     div_main.appendChild(div);
+                     button.addEventListener('click',function(event){
+                         var parentdiv = event.target.parentNode;
+                         var index = div_main.fileindices.indexOf(parentdiv.getAttribute('data-id'));
+                         var dataid = parentdiv.getAttribute('data-id');
+                         div_main.fileindices.splice(index,1);
+                         div_main.files.splice(index,1);
+                         parentdiv.parentNode.removeChild(parentdiv);
+                         var div_images = document.getElementById('results');
+                         var children = div_images.children;
+                         for(var i=0;i<children.length;i++){
+                             //console.log(children[i].dataset.id);
+                             if(children[i].dataset.id === dataid){
+                                 div_images.removeChild(children[i]);
+                                 break;
+                             }
+
+                         }
+
+                     });
+                 });
+           });
+        });
+
+        function generateUUID() {
+            var d = new Date().getTime();
+
+            var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+
+                var r = (d + Math.random()*16)%16 | 0;
+
+                d = Math.floor(d/16);
+
+                return (c=='x' ? r : (r&0x7|0x8)).toString(16);
+            });
+            return uuid;
+        };
+    </script>
+</head>
+<body>
+
+    <input type="file" multiple placeholder="upload files..." id="inp1" >
+    <div class="input" data-for="inp1">
+
+    </div>
+    <div id="results">
+
+    </div>
+
+
+</body>
+</html>

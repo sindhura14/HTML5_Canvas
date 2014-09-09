@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+            background-color: #fffae5;
+        }
+    </style>
+    <script src="bower_components/modernizr/modernizr.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded',function(){
+            var img = new Image();
+            img.src = 'img1.jpg';
+            var canvas = document.getElementById('source');
+            var context = canvas.getContext('2d');
+            var img_data = context.getImageData(0,0,canvas.width,canvas.height);
+            img.onload = function() {
+                context.drawImage(img, 0, 0);
+            };
+
+            var gray = document.getElementById('gray');
+            gray.addEventListener('click',function(){
+                var img_data = context.getImageData(0,0,canvas.width,canvas.height);
+                for(var i=0;i<img_data.data.length;i+=4) {
+                    var red = img_data.data[i];
+                    var blue = img_data.data[i + 1];
+                    var green = img_data.data[i + 2];
+                    gr = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+                    img_data.data[i] = img_data.data[i + 1] = img_data.data[i + 2] = gr;
+                }
+                context.putImageData(img_data,0,0);
+            });
+
+            var Threshold = document.getElementById('threshold');
+
+            Threshold.addEventListener('click',function(){
+                var img_data = context.getImageData(0,0,canvas.width,canvas.height);
+                var threshold = 90;
+                for(var i=0;i<img_data.data.length;i+=4) {
+                    var red = img_data.data[i];
+                    var blue = img_data.data[i + 1];
+                    var green = img_data.data[i + 2];
+                    gr = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+                    img_data.data[i] = img_data.data[i + 1] = img_data.data[i + 2] = (gr > threshold ? 255 : 0);
+                }
+                context.putImageData(img_data,0,0);
+            });
+
+            var reset = document.getElementById('reset');
+            reset.addEventListener('click',function(){
+
+                context.drawImage(img, 0, 0);
+
+            });
+
+
+
+
+        });
+    </script>
+</head>
+<body>
+    <canvas id="source" width="728" height = "409"></canvas>
+    <button id="gray">GrayScale</button>
+    <button id="threshold">Threshold</button>
+    <button id="reset">reset</button>
+</body>
+</html>
